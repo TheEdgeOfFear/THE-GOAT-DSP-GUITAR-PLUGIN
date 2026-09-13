@@ -95,6 +95,11 @@ The compiled binaries will be output to:
 
 ---
 
+All the raw files are supplied for your adjustments and builds - stay RAD Metal Heads... The Edge Of Fear 
+Youtube Channel - https://www.youtube.com/@theedgeoffearmetal
+Instagram - https://www.instagram.com/theedgeoffear/
+Soundcloud - https://soundcloud.com/user-290758847
+
 ## 📄 License
 
 This project is open-source and licensed under the **GNU General Public License v3.0 (GPLv3)**. See the [LICENSE](LICENSE) file for details.
