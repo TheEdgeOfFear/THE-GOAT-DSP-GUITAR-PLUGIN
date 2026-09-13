@@ -11,7 +11,7 @@ The ultimate Swedish Chainsaw and Modern Deathcore HM-2 cult distortion plugin. 
 ---
 
 ## Plugin Overview
-
+Image source: Assets/THE GOAT.png
 THE GOAT by THE EDGE OF FEAR is a boutique digital emulation of the legendary Japanese 1980s Boss HM-2 Heavy Metal circuit and the Melbourne-crafted Australian boutique evolution, the Kink Pedals "Oath of the Goat".
 
 THE GOAT accurately models the entire multi-stage analog signal path: from the 72.3 Hz Butterworth pre-emphasis filter and discrete transistor buffer treble shelf, through the 4x oversampled asymmetric diode clipping engine, into the passive 530 Hz mid-scoop, and across the iconic active Dual-Gyrator Tone Stack (100 Hz Low and 1.3 kHz Buzzsaw Core).
