@@ -33,14 +33,28 @@ TheGoatAudioProcessorEditor::TheGoatAudioProcessorEditor(TheGoatAudioProcessor& 
     deletePresetButton.addListener(this);
     addAndMakeVisible(deletePresetButton);
 
-    // --- Header Sliders ---
-    // Input Gain
+    // --- Header Controls ---
+    // Input Routing (Auto, Left Only, Right Only, Stereo, Mono Sum)
+    inputRoutingBox.addItem("AUTO (Detect)", 1);
+    inputRoutingBox.addItem("L (In 1 -> Both)", 2);
+    inputRoutingBox.addItem("R (In 2 -> Both)", 3);
+    inputRoutingBox.addItem("STEREO (L+R)", 4);
+    inputRoutingBox.addItem("MONO SUM", 5);
+    inputRoutingBox.setSelectedId(1, juce::dontSendNotification);
+    addAndMakeVisible(inputRoutingBox);
+    inputRoutingLabel.setText("INPUT CH", juce::dontSendNotification);
+    inputRoutingLabel.setJustificationType(juce::Justification::centred);
+    inputRoutingLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
+    inputRoutingLabel.setColour(juce::Label::textColourId, juce::Colour(0xff8a909d));
+    addAndMakeVisible(inputRoutingLabel);
+
+    // Input Gain Trim
     inGainSlider.setRange(-24.0, 12.0, 0.1);
     inGainSlider.setTextValueSuffix(" dB");
     addAndMakeVisible(inGainSlider);
     inGainLabel.setText("INPUT", juce::dontSendNotification);
     inGainLabel.setJustificationType(juce::Justification::centred);
-    inGainLabel.setFont(juce::FontOptions(11.0f, juce::Font::bold));
+    inGainLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
     inGainLabel.setColour(juce::Label::textColourId, juce::Colour(0xff8a909d));
     addAndMakeVisible(inGainLabel);
 
@@ -50,7 +64,7 @@ TheGoatAudioProcessorEditor::TheGoatAudioProcessorEditor(TheGoatAudioProcessor& 
     addAndMakeVisible(blendSlider);
     blendLabel.setText("BLEND", juce::dontSendNotification);
     blendLabel.setJustificationType(juce::Justification::centred);
-    blendLabel.setFont(juce::FontOptions(11.0f, juce::Font::bold));
+    blendLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
     blendLabel.setColour(juce::Label::textColourId, juce::Colour(0xff8a909d));
     addAndMakeVisible(blendLabel);
 
@@ -60,7 +74,7 @@ TheGoatAudioProcessorEditor::TheGoatAudioProcessorEditor(TheGoatAudioProcessor& 
     addAndMakeVisible(masterVolSlider);
     masterVolLabel.setText("OUTPUT", juce::dontSendNotification);
     masterVolLabel.setJustificationType(juce::Justification::centred);
-    masterVolLabel.setFont(juce::FontOptions(11.0f, juce::Font::bold));
+    masterVolLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
     masterVolLabel.setColour(juce::Label::textColourId, juce::Colour(0xff8a909d));
     addAndMakeVisible(masterVolLabel);
 
@@ -123,7 +137,7 @@ TheGoatAudioProcessorEditor::TheGoatAudioProcessorEditor(TheGoatAudioProcessor& 
     highLabel.setColour(juce::Label::textColourId, juce::Colours::white);
     addAndMakeVisible(highLabel);
 
-    // 4. VOLUME
+    // 4. LEVEL (Master)
     volSlider.setRange(-30.0, 12.0, 0.1);
     volSlider.setTextValueSuffix(" dB");
     addAndMakeVisible(volSlider);
@@ -155,15 +169,16 @@ TheGoatAudioProcessorEditor::TheGoatAudioProcessorEditor(TheGoatAudioProcessor& 
 
     // APVTS Attachments
     auto& apvts = audioProcessor.getAPVTS();
-    inGainAttachment    = std::make_unique<SliderAttachment>(apvts, "inGain", inGainSlider);
-    blendAttachment     = std::make_unique<SliderAttachment>(apvts, "blend", blendSlider);
-    masterVolAttachment = std::make_unique<SliderAttachment>(apvts, "vol", masterVolSlider);
-    distAttachment      = std::make_unique<SliderAttachment>(apvts, "dist", distSlider);
-    lowAttachment       = std::make_unique<SliderAttachment>(apvts, "low", lowSlider);
-    highAttachment      = std::make_unique<SliderAttachment>(apvts, "high", highSlider);
-    volAttachment       = std::make_unique<SliderAttachment>(apvts, "vol", volSlider);
-    oversampleAttachment= std::make_unique<ComboBoxAttachment>(apvts, "oversample", oversampleBox);
-    powerAttachment     = std::make_unique<ButtonAttachment>(apvts, "power", powerButton);
+    inGainAttachment       = std::make_unique<SliderAttachment>(apvts, "inGain", inGainSlider);
+    blendAttachment        = std::make_unique<SliderAttachment>(apvts, "blend", blendSlider);
+    masterVolAttachment    = std::make_unique<SliderAttachment>(apvts, "vol", masterVolSlider);
+    distAttachment         = std::make_unique<SliderAttachment>(apvts, "dist", distSlider);
+    lowAttachment          = std::make_unique<SliderAttachment>(apvts, "low", lowSlider);
+    highAttachment         = std::make_unique<SliderAttachment>(apvts, "high", highSlider);
+    volAttachment          = std::make_unique<SliderAttachment>(apvts, "vol", volSlider);
+    oversampleAttachment   = std::make_unique<ComboBoxAttachment>(apvts, "oversample", oversampleBox);
+    inputRoutingAttachment = std::make_unique<ComboBoxAttachment>(apvts, "inputRouting", inputRoutingBox);
+    powerAttachment        = std::make_unique<ButtonAttachment>(apvts, "power", powerButton);
 
     // Synchronize mode switch from APVTS initial state
     if (auto* param = apvts.getRawParameterValue("mode"))
@@ -249,37 +264,41 @@ void TheGoatAudioProcessorEditor::resized()
     const int topMargin = 10;
     const int btnH = 26;
 
-    prevPresetButton.setBounds(14, topMargin, 26, btnH);
-    categoryBox.setBounds(44, topMargin, 140, btnH);
-    presetBox.setBounds(188, topMargin, 170, btnH);
-    nextPresetButton.setBounds(362, topMargin, 26, btnH);
-    savePresetButton.setBounds(392, topMargin, 48, btnH);
-    deletePresetButton.setBounds(444, topMargin, 42, btnH);
+    prevPresetButton.setBounds(10, topMargin, 24, btnH);
+    categoryBox.setBounds(36, topMargin, 120, btnH);
+    presetBox.setBounds(158, topMargin, 140, btnH);
+    nextPresetButton.setBounds(300, topMargin, 24, btnH);
+    savePresetButton.setBounds(326, topMargin, 42, btnH);
+    deletePresetButton.setBounds(370, topMargin, 38, btnH);
 
     // Header Sliders & Controls (Right side of top bar)
-    const int headerKnobSize = 36;
+    const int headerKnobSize = 34;
     int curX = w - 460;
+
+    inputRoutingBox.setBounds(curX, topMargin, 105, btnH);
+    inputRoutingLabel.setBounds(curX, topMargin + 26, 105, 14);
+    curX += 112;
 
     inGainSlider.setBounds(curX, topMargin - 4, headerKnobSize, headerKnobSize);
     inGainLabel.setBounds(curX - 10, topMargin + 26, headerKnobSize + 20, 14);
-    curX += 60;
+    curX += 52;
 
     blendSlider.setBounds(curX, topMargin - 4, headerKnobSize, headerKnobSize);
     blendLabel.setBounds(curX - 10, topMargin + 26, headerKnobSize + 20, 14);
-    curX += 60;
+    curX += 52;
 
     masterVolSlider.setBounds(curX, topMargin - 4, headerKnobSize, headerKnobSize);
     masterVolLabel.setBounds(curX - 10, topMargin + 26, headerKnobSize + 20, 14);
-    curX += 65;
+    curX += 56;
 
-    oversampleBox.setBounds(curX, topMargin, 95, btnH);
-    oversampleLabel.setBounds(curX, topMargin + 26, 95, 14);
-    curX += 105;
+    oversampleBox.setBounds(curX, topMargin, 85, btnH);
+    oversampleLabel.setBounds(curX, topMargin + 26, 85, 14);
+    curX += 92;
 
-    midiMenuButton.setBounds(curX, topMargin, 74, btnH);
-    curX += 80;
+    midiMenuButton.setBounds(curX, topMargin, 66, btnH);
+    curX += 70;
 
-    powerButton.setBounds(w - 90, topMargin, 76, btnH);
+    powerButton.setBounds(w - 78, topMargin, 68, btnH);
 
     // Sub-Banner
     bannerLabel.setBounds(0, 53, w, 24);

@@ -7,15 +7,16 @@ TheGoatAudioProcessor::TheGoatAudioProcessor()
                      .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       apvts(*this, nullptr, "PARAMETERS", createParameterLayout())
 {
-    inGainParam     = apvts.getRawParameterValue("inGain");
-    distParam       = apvts.getRawParameterValue("dist");
-    lowParam        = apvts.getRawParameterValue("low");
-    highParam       = apvts.getRawParameterValue("high");
-    volParam        = apvts.getRawParameterValue("vol");
-    blendParam      = apvts.getRawParameterValue("blend");
-    modeParam       = apvts.getRawParameterValue("mode");
-    powerParam      = apvts.getRawParameterValue("power");
-    oversampleParam = apvts.getRawParameterValue("oversample");
+    inGainParam       = apvts.getRawParameterValue("inGain");
+    distParam         = apvts.getRawParameterValue("dist");
+    lowParam          = apvts.getRawParameterValue("low");
+    highParam         = apvts.getRawParameterValue("high");
+    volParam          = apvts.getRawParameterValue("vol");
+    blendParam        = apvts.getRawParameterValue("blend");
+    modeParam         = apvts.getRawParameterValue("mode");
+    powerParam        = apvts.getRawParameterValue("power");
+    oversampleParam   = apvts.getRawParameterValue("oversample");
+    inputRoutingParam = apvts.getRawParameterValue("inputRouting");
 }
 
 TheGoatAudioProcessor::~TheGoatAudioProcessor() = default;
@@ -89,6 +90,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout TheGoatAudioProcessor::creat
         "Oversampling",
         juce::StringArray{"1x (Off)", "2x Polyphase", "4x Polyphase", "8x Polyphase"},
         2)); // default 4x
+
+    // inputRouting: Auto Detect, Left (In 1), Right (In 2), Stereo (L+R), Mono Sum
+    params.push_back(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID{"inputRouting", 1},
+        "Input Channel",
+        juce::StringArray{"Auto Detect", "Left (In 1)", "Right (In 2)", "Stereo (L+R)", "Mono Sum"},
+        0)); // default Auto Detect
 
     return { params.begin(), params.end() };
 }
@@ -175,8 +183,8 @@ void TheGoatAudioProcessor::loadPreset(int index)
 
 void TheGoatAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    const int numChannels = std::max(getTotalNumInputChannels(), getTotalNumOutputChannels());
-    dspChain.prepare(sampleRate, samplesPerBlock, std::max(2, numChannels));
+    const int numChannels = std::max(2, std::max(getTotalNumInputChannels(), getTotalNumOutputChannels()));
+    dspChain.prepare(sampleRate, samplesPerBlock, numChannels);
 }
 
 void TheGoatAudioProcessor::releaseResources()
@@ -192,7 +200,8 @@ bool TheGoatAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) c
     if (mainOutput != juce::AudioChannelSet::mono() && mainOutput != juce::AudioChannelSet::stereo())
         return false;
 
-    if (mainInput != juce::AudioChannelSet::mono() && mainInput != juce::AudioChannelSet::stereo())
+    if (mainInput != juce::AudioChannelSet::mono() && mainInput != juce::AudioChannelSet::stereo()
+        && mainInput != juce::AudioChannelSet::disabled())
         return false;
 
     return true;
@@ -203,9 +212,14 @@ void TheGoatAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     juce::ScopedNoDenormals noDenormals;
     const int totalNumInputChannels  = getTotalNumInputChannels();
     const int totalNumOutputChannels = getTotalNumOutputChannels();
+    const int numSamples = buffer.getNumSamples();
+    const int bufChannels = buffer.getNumChannels();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear(i, 0, buffer.getNumSamples());
+    if (numSamples <= 0 || bufChannels <= 0)
+        return;
+
+    for (int i = totalNumInputChannels; i < bufChannels; ++i)
+        buffer.clear(i, 0, numSamples);
 
     // Process incoming MIDI for CC Learn / Presets / Footswitch
     midiManager.processMidiBuffer(midiMessages, apvts, [this](int pIdx) {
@@ -213,15 +227,16 @@ void TheGoatAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     });
 
     // Extract real-time parameter values
-    const float inGainDb  = inGainParam ? inGainParam->load() : 0.0f;
-    const float distVal   = distParam ? distParam->load() : 0.75f;
-    const float lowDb     = lowParam ? lowParam->load() : 18.0f;
-    const float highDb    = highParam ? highParam->load() : 20.0f;
-    const float volDb     = volParam ? volParam->load() : 0.0f;
-    const float blendVal  = blendParam ? blendParam->load() : 1.0f;
-    const int modeVal     = modeParam ? static_cast<int>(modeParam->load()) : 0;
-    const bool isPowerOn  = powerParam ? (powerParam->load() > 0.5f) : true;
-    const int overIdx     = oversampleParam ? static_cast<int>(oversampleParam->load()) : 2;
+    const float inGainDb     = inGainParam ? inGainParam->load() : 0.0f;
+    const float distVal      = distParam ? distParam->load() : 0.75f;
+    const float lowDb        = lowParam ? lowParam->load() : 18.0f;
+    const float highDb       = highParam ? highParam->load() : 20.0f;
+    const float volDb        = volParam ? volParam->load() : 0.0f;
+    const float blendVal     = blendParam ? blendParam->load() : 1.0f;
+    const int modeVal        = modeParam ? static_cast<int>(modeParam->load()) : 0;
+    const bool isPowerOn     = powerParam ? (powerParam->load() > 0.5f) : true;
+    const int overIdx        = oversampleParam ? static_cast<int>(oversampleParam->load()) : 2;
+    const int routingIdx     = inputRoutingParam ? static_cast<int>(inputRoutingParam->load()) : 0;
 
     const float inputGainLinear  = juce::Decibels::decibelsToGain(inGainDb);
     const float outputGainLinear = juce::Decibels::decibelsToGain(volDb);
@@ -238,6 +253,12 @@ void TheGoatAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
 
     GoatDSP::ClippingMode clipMode = (modeVal == 1) ? GoatDSP::ClippingMode::GoatHotRod : GoatDSP::ClippingMode::VintageHM2;
 
+    GoatDSP::InputRoutingMode routingMode = GoatDSP::InputRoutingMode::AutoDetect;
+    if (routingIdx == 1) routingMode = GoatDSP::InputRoutingMode::LeftOnly;
+    else if (routingIdx == 2) routingMode = GoatDSP::InputRoutingMode::RightOnly;
+    else if (routingIdx == 3) routingMode = GoatDSP::InputRoutingMode::Stereo;
+    else if (routingIdx == 4) routingMode = GoatDSP::InputRoutingMode::MonoSum;
+
     // Route audio through DSP Engine
     dspChain.process(buffer,
                      inputGainLinear,
@@ -247,6 +268,7 @@ void TheGoatAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
                      outputGainLinear,
                      blendVal,
                      clipMode,
+                     routingMode,
                      isPowerOn);
 }
 

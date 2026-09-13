@@ -121,6 +121,7 @@ Unlike conventional overdrive, distortion, or fuzz pedals that rely on basic sym
 | `mode` | **CLIPPING ENGINE** | 2-Way Toggle | `0 / 1` | `0 (Vintage HM-2)` | Silicon+Germanium vs Silicon+LED diode clipping. |
 | `power` | **STOMP BYPASS** | Stomp Switch | `Off / On` | `On (Active)` | Heavy-duty true bypass footswitch with glowing LED. |
 | `oversample`| **OVERSAMPLE** | Dropdown Menu | `1x, 2x, 4x, 8x` | `4x Polyphase` | Anti-aliasing oversampling factor. |
+| `inputRouting` | **INPUT CH** | Dropdown Menu | `Auto, L, R, Stereo, Sum` | `Auto Detect` | Stereo channel routing (routes L or R to BOTH stereo outputs). |
 
 ---
 

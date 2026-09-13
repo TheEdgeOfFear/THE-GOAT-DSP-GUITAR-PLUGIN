@@ -141,31 +141,34 @@ private:
             paramBox.addItem("Bypass Footswitch", 7);
             paramBox.addItem("Input Gain", 8);
             paramBox.addItem("Oversampling", 9);
+            paramBox.addItem("Input Channel Routing", 10);
 
-            if (m.parameterId == "dist")          paramBox.setSelectedId(1, juce::dontSendNotification);
-            else if (m.parameterId == "low")      paramBox.setSelectedId(2, juce::dontSendNotification);
-            else if (m.parameterId == "high")     paramBox.setSelectedId(3, juce::dontSendNotification);
-            else if (m.parameterId == "vol")      paramBox.setSelectedId(4, juce::dontSendNotification);
-            else if (m.parameterId == "blend")    paramBox.setSelectedId(5, juce::dontSendNotification);
-            else if (m.parameterId == "mode")     paramBox.setSelectedId(6, juce::dontSendNotification);
-            else if (m.parameterId == "power")    paramBox.setSelectedId(7, juce::dontSendNotification);
-            else if (m.parameterId == "inGain")   paramBox.setSelectedId(8, juce::dontSendNotification);
-            else if (m.parameterId == "oversample") paramBox.setSelectedId(9, juce::dontSendNotification);
+            if (m.parameterId == "dist")              paramBox.setSelectedId(1, juce::dontSendNotification);
+            else if (m.parameterId == "low")          paramBox.setSelectedId(2, juce::dontSendNotification);
+            else if (m.parameterId == "high")         paramBox.setSelectedId(3, juce::dontSendNotification);
+            else if (m.parameterId == "vol")          paramBox.setSelectedId(4, juce::dontSendNotification);
+            else if (m.parameterId == "blend")        paramBox.setSelectedId(5, juce::dontSendNotification);
+            else if (m.parameterId == "mode")         paramBox.setSelectedId(6, juce::dontSendNotification);
+            else if (m.parameterId == "power")        paramBox.setSelectedId(7, juce::dontSendNotification);
+            else if (m.parameterId == "inGain")       paramBox.setSelectedId(8, juce::dontSendNotification);
+            else if (m.parameterId == "oversample")   paramBox.setSelectedId(9, juce::dontSendNotification);
+            else if (m.parameterId == "inputRouting") paramBox.setSelectedId(10, juce::dontSendNotification);
             else paramBox.setSelectedId(1, juce::dontSendNotification);
 
             paramBox.onChange = [this]() {
                 auto& item = manager.getMappings()[static_cast<size_t>(rowIndex)];
                 switch (paramBox.getSelectedId())
                 {
-                    case 1: item.parameterId = "dist";       item.displayName = "Gain / Horns";        break;
-                    case 2: item.parameterId = "low";        item.displayName = "Low 100Hz Gyrator";   break;
-                    case 3: item.parameterId = "high";       item.displayName = "High 1.3kHz Buzzsaw"; break;
-                    case 4: item.parameterId = "vol";        item.displayName = "Master Volume";       break;
-                    case 5: item.parameterId = "blend";      item.displayName = "Dry / Wet Blend";     break;
-                    case 6: item.parameterId = "mode";       item.displayName = "Diode Mode Toggle";   break;
-                    case 7: item.parameterId = "power";      item.displayName = "Bypass Footswitch";   break;
-                    case 8: item.parameterId = "inGain";     item.displayName = "Input Gain";          break;
-                    case 9: item.parameterId = "oversample"; item.displayName = "Oversampling";        break;
+                    case 1:  item.parameterId = "dist";         item.displayName = "Gain / Horns";          break;
+                    case 2:  item.parameterId = "low";          item.displayName = "Low 100Hz Gyrator";     break;
+                    case 3:  item.parameterId = "high";         item.displayName = "High 1.3kHz Buzzsaw";   break;
+                    case 4:  item.parameterId = "vol";          item.displayName = "Master Volume";         break;
+                    case 5:  item.parameterId = "blend";        item.displayName = "Dry / Wet Blend";       break;
+                    case 6:  item.parameterId = "mode";         item.displayName = "Diode Mode Toggle";     break;
+                    case 7:  item.parameterId = "power";        item.displayName = "Bypass Footswitch";     break;
+                    case 8:  item.parameterId = "inGain";       item.displayName = "Input Gain";            break;
+                    case 9:  item.parameterId = "oversample";   item.displayName = "Oversampling";          break;
+                    case 10: item.parameterId = "inputRouting"; item.displayName = "Input Channel Routing"; break;
                 }
             };
             addAndMakeVisible(paramBox);

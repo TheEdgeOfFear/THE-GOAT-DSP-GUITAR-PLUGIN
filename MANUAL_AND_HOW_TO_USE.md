@@ -50,8 +50,13 @@ Located on the lower left of the faceplate:
 
 ---
 
-### 4. Header Bar & Master Section
-
+- **INPUT CH (Stereo Channel Routing)**:
+  - Selects how audio interface input channels are routed into the DSP engine:
+    - `AUTO (Detect)`: Smart auto-sensing. If guitar signal is detected on Left only (Input 1), it automatically duplicates the signal to BOTH outputs (L+R). If on Right only (Input 2), it duplicates to BOTH outputs (L+R). If both channels receive signal, it processes true Stereo.
+    - `L (In 1 -> Both)`: Forces Channel 0 (Input 1 / Left) to be processed and outputted to **BOTH Left and Right channels** (both ears in headphones/monitors).
+    - `R (In 2 -> Both)`: Forces Channel 1 (Input 2 / Right) to be processed and outputted to **BOTH Left and Right channels**.
+    - `STEREO (L+R)`: True independent stereo processing for stereo guitar pre-amps or dual pickup feeds.
+    - `MONO SUM`: Sums $(L+R) \times 0.5$ and outputs across both stereo channels.
 - **INPUT (-24 dB to +12 dB)**:
   - Input staging trim slider. Allows boosting weak passive single-coil pickups or padding hot active humbuckers (Fishman Fluence, EMG 81) before hitting the pre-emphasis filters.
 - **BLEND (0% to 100% Wet)**:

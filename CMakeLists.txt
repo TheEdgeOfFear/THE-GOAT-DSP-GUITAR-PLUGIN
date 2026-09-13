@@ -80,8 +80,14 @@ target_compile_definitions(TheGoat
 
 target_include_directories(TheGoat
     PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/asiosdk/common"
+        "${CMAKE_CURRENT_SOURCE_DIR}/asiosdk/asiosdk_2.3.3_2019-06-14/common"
+        "${CMAKE_CURRENT_SOURCE_DIR}/asiosdk/asiosdk_2.3.3_2019-06-14/host"
+        "${CMAKE_CURRENT_SOURCE_DIR}/asiosdk/asiosdk_2.3.3_2019-06-14/host/pc"
         "${CMAKE_CURRENT_SOURCE_DIR}/../asiosdk/common"
         "${CMAKE_CURRENT_SOURCE_DIR}/../asiosdk/asiosdk_2.3.3_2019-06-14/common"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../asiosdk/asiosdk_2.3.3_2019-06-14/host"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../asiosdk/asiosdk_2.3.3_2019-06-14/host/pc"
 )
 
 if(MSVC)

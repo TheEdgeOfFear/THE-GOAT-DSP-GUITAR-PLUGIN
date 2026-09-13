@@ -36,6 +36,10 @@ private:
     juce::TextButton savePresetButton{"SAVE"};
     juce::TextButton deletePresetButton{"DEL"};
 
+    // Input Routing Selector
+    juce::ComboBox inputRoutingBox;
+    juce::Label inputRoutingLabel;
+
     BrutalKnob inGainSlider{0.0};
     juce::Label inGainLabel;
 
@@ -90,6 +94,7 @@ private:
     std::unique_ptr<SliderAttachment> highAttachment;
     std::unique_ptr<SliderAttachment> volAttachment;
     std::unique_ptr<ComboBoxAttachment> oversampleAttachment;
+    std::unique_ptr<ComboBoxAttachment> inputRoutingAttachment;
     std::unique_ptr<ButtonAttachment> powerAttachment;
 
     std::vector<std::string> categories;
