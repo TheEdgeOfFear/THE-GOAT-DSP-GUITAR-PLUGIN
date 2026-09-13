@@ -1,7 +1,3 @@
-Here is a cleaned-up, clean plain-text version of your documentation with all the emojis, badges, LaTeX math formatting, and unnecessary Markdown decorative symbols removed:
-
----
-
 # THE GOAT
 
 By THE EDGE OF FEAR
