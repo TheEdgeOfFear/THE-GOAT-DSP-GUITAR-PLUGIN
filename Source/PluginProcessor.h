@@ -62,10 +62,11 @@ private:
     std::atomic<float>* highParam = nullptr;
     std::atomic<float>* volParam = nullptr;
     std::atomic<float>* blendParam = nullptr;
-    std::atomic<float>* modeParam = nullptr;
     std::atomic<float>* powerParam = nullptr;
-    std::atomic<float>* oversampleParam = nullptr;
-    std::atomic<float>* inputRoutingParam = nullptr;
+
+    juce::AudioParameterChoice* modeChoice = nullptr;
+    juce::AudioParameterChoice* oversampleChoice = nullptr;
+    juce::AudioParameterChoice* inputRoutingChoice = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TheGoatAudioProcessor)
 };

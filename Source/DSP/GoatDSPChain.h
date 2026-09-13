@@ -203,6 +203,8 @@ public:
         if (oversampling2x) oversampling2x->reset();
         if (oversampling4x) oversampling4x->reset();
         if (oversampling8x) oversampling8x->reset();
+
+        autoDetectedMode = 1; // Default to Left Mono -> Both
     }
 
     void setOversamplingFactor(int factor)
@@ -252,21 +254,24 @@ public:
         {
             case InputRoutingMode::LeftOnly:
             {
-                // Force Left Input 1 to BOTH channels
+                // Force Input 1 (Left) to BOTH channels
                 for (int i = 0; i < numSamples; ++i)
                 {
-                    workL[i] = inL[i];
-                    workR[i] = inL[i];
+                    const float s = inL[i];
+                    workL[i] = s;
+                    workR[i] = s;
                 }
                 break;
             }
             case InputRoutingMode::RightOnly:
             {
-                // Force Right Input 2 to BOTH channels
+                // Force Input 2 (Right) to BOTH channels (falls back to inL if only 1 channel exists)
+                const float* src = (inChannels >= 2) ? inR : inL;
                 for (int i = 0; i < numSamples; ++i)
                 {
-                    workL[i] = inR[i];
-                    workR[i] = inR[i];
+                    const float s = src[i];
+                    workL[i] = s;
+                    workR[i] = s;
                 }
                 break;
             }
@@ -276,7 +281,7 @@ public:
                 for (int i = 0; i < numSamples; ++i)
                 {
                     workL[i] = inL[i];
-                    workR[i] = inR[i];
+                    workR[i] = (inChannels >= 2) ? inR[i] : inL[i];
                 }
                 break;
             }
@@ -285,7 +290,7 @@ public:
                 // Sum (L+R)*0.5 to both channels
                 for (int i = 0; i < numSamples; ++i)
                 {
-                    const float s = 0.5f * (inL[i] + inR[i]);
+                    const float s = (inChannels >= 2) ? (0.5f * (inL[i] + inR[i])) : inL[i];
                     workL[i] = s;
                     workR[i] = s;
                 }
@@ -294,13 +299,13 @@ public:
             case InputRoutingMode::AutoDetect:
             default:
             {
-                // Auto Detect:
-                if (inChannels == 1)
+                if (inChannels < 2)
                 {
                     for (int i = 0; i < numSamples; ++i)
                     {
-                        workL[i] = inL[i];
-                        workR[i] = inL[i];
+                        const float s = inL[i];
+                        workL[i] = s;
+                        workR[i] = s;
                     }
                 }
                 else
@@ -308,27 +313,40 @@ public:
                     const float magL = buffer.getMagnitude(0, 0, numSamples);
                     const float magR = buffer.getMagnitude(1, 0, numSamples);
 
-                    if (magL > 1e-4f && magR < 1e-5f)
+                    // Dynamic threshold detection (handles guitar into In 1 or In 2 with real interface noise floors)
+                    if (magL > 0.0005f && (magL > 4.0f * magR || magR < 0.001f))
                     {
-                        // Signal only on L -> Duplicate L to Both
+                        autoDetectedMode = 1; // Left Mono -> Both
+                    }
+                    else if (magR > 0.0005f && (magR > 4.0f * magL || magL < 0.001f))
+                    {
+                        autoDetectedMode = 2; // Right Mono -> Both
+                    }
+                    else if (magL > 0.003f && magR > 0.003f)
+                    {
+                        autoDetectedMode = 0; // True Stereo
+                    }
+
+                    if (autoDetectedMode == 1)
+                    {
                         for (int i = 0; i < numSamples; ++i)
                         {
-                            workL[i] = inL[i];
-                            workR[i] = inL[i];
+                            const float s = inL[i];
+                            workL[i] = s;
+                            workR[i] = s;
                         }
                     }
-                    else if (magR > 1e-4f && magL < 1e-5f)
+                    else if (autoDetectedMode == 2)
                     {
-                        // Signal only on R -> Duplicate R to Both
                         for (int i = 0; i < numSamples; ++i)
                         {
-                            workL[i] = inR[i];
-                            workR[i] = inR[i];
+                            const float s = inR[i];
+                            workL[i] = s;
+                            workR[i] = s;
                         }
                     }
                     else
                     {
-                        // Signal on both or silence -> True stereo
                         for (int i = 0; i < numSamples; ++i)
                         {
                             workL[i] = inL[i];
@@ -536,6 +554,7 @@ private:
 
     float lastLowDb = 18.0f;
     float lastHighDb = 20.0f;
+    int autoDetectedMode = 1; // 0 = Stereo, 1 = Left Only -> Both, 2 = Right Only -> Both
 
     // Filters (100% Zero-Heap-Allocation Biquads)
     StereoBiquad dcBlocker;

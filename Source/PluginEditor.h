@@ -36,18 +36,9 @@ private:
     juce::TextButton savePresetButton{"SAVE"};
     juce::TextButton deletePresetButton{"DEL"};
 
-    // Input Routing Selector
+    // Input Routing & Oversampling
     juce::ComboBox inputRoutingBox;
     juce::Label inputRoutingLabel;
-
-    BrutalKnob inGainSlider{0.0};
-    juce::Label inGainLabel;
-
-    BrutalKnob blendSlider{1.0};
-    juce::Label blendLabel;
-
-    BrutalKnob masterVolSlider{0.0};
-    juce::Label masterVolLabel;
 
     juce::ComboBox oversampleBox;
     juce::Label oversampleLabel;
@@ -71,6 +62,13 @@ private:
     BrutalKnob volSlider{0.0};
     juce::Label volLabel;
 
+    // Secondary Knobs on pedal chassis (In Gain & Blend)
+    BrutalKnob inGainSlider{0.0};
+    juce::Label inGainLabel;
+
+    BrutalKnob blendSlider{1.0};
+    juce::Label blendLabel;
+
     // 2-Way Diode Toggle Switch
     DiodeToggleSwitch diodeModeSwitch{"VINTAGE HM-2", "GOAT HOT-ROD"};
     juce::Label diodeModeLabel;
@@ -88,7 +86,6 @@ private:
 
     std::unique_ptr<SliderAttachment> inGainAttachment;
     std::unique_ptr<SliderAttachment> blendAttachment;
-    std::unique_ptr<SliderAttachment> masterVolAttachment;
     std::unique_ptr<SliderAttachment> distAttachment;
     std::unique_ptr<SliderAttachment> lowAttachment;
     std::unique_ptr<SliderAttachment> highAttachment;

@@ -36,47 +36,17 @@ TheGoatAudioProcessorEditor::TheGoatAudioProcessorEditor(TheGoatAudioProcessor& 
     // --- Header Controls ---
     // Input Routing (Auto, Left Only, Right Only, Stereo, Mono Sum)
     inputRoutingBox.addItem("AUTO (Detect)", 1);
-    inputRoutingBox.addItem("L (In 1 -> Both)", 2);
-    inputRoutingBox.addItem("R (In 2 -> Both)", 3);
+    inputRoutingBox.addItem("INPUT 1 (L -> Both)", 2);
+    inputRoutingBox.addItem("INPUT 2 (R -> Both)", 3);
     inputRoutingBox.addItem("STEREO (L+R)", 4);
-    inputRoutingBox.addItem("MONO SUM", 5);
-    inputRoutingBox.setSelectedId(1, juce::dontSendNotification);
+    inputRoutingBox.addItem("MONO SUM (1+2)", 5);
+    inputRoutingBox.setSelectedId(2, juce::dontSendNotification);
     addAndMakeVisible(inputRoutingBox);
     inputRoutingLabel.setText("INPUT CH", juce::dontSendNotification);
     inputRoutingLabel.setJustificationType(juce::Justification::centred);
     inputRoutingLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
     inputRoutingLabel.setColour(juce::Label::textColourId, juce::Colour(0xff8a909d));
     addAndMakeVisible(inputRoutingLabel);
-
-    // Input Gain Trim
-    inGainSlider.setRange(-24.0, 12.0, 0.1);
-    inGainSlider.setTextValueSuffix(" dB");
-    addAndMakeVisible(inGainSlider);
-    inGainLabel.setText("INPUT", juce::dontSendNotification);
-    inGainLabel.setJustificationType(juce::Justification::centred);
-    inGainLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
-    inGainLabel.setColour(juce::Label::textColourId, juce::Colour(0xff8a909d));
-    addAndMakeVisible(inGainLabel);
-
-    // Blend
-    blendSlider.setRange(0.0, 1.0, 0.01);
-    blendSlider.setTextValueSuffix(" WET");
-    addAndMakeVisible(blendSlider);
-    blendLabel.setText("BLEND", juce::dontSendNotification);
-    blendLabel.setJustificationType(juce::Justification::centred);
-    blendLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
-    blendLabel.setColour(juce::Label::textColourId, juce::Colour(0xff8a909d));
-    addAndMakeVisible(blendLabel);
-
-    // Master Output Volume
-    masterVolSlider.setRange(-30.0, 12.0, 0.1);
-    masterVolSlider.setTextValueSuffix(" dB");
-    addAndMakeVisible(masterVolSlider);
-    masterVolLabel.setText("OUTPUT", juce::dontSendNotification);
-    masterVolLabel.setJustificationType(juce::Justification::centred);
-    masterVolLabel.setFont(juce::FontOptions(10.0f, juce::Font::bold));
-    masterVolLabel.setColour(juce::Label::textColourId, juce::Colour(0xff8a909d));
-    addAndMakeVisible(masterVolLabel);
 
     // Oversampling ComboBox
     oversampleBox.addItem("1x (Off)", 1);
@@ -147,6 +117,27 @@ TheGoatAudioProcessorEditor::TheGoatAudioProcessorEditor(TheGoatAudioProcessor& 
     volLabel.setColour(juce::Label::textColourId, juce::Colours::white);
     addAndMakeVisible(volLabel);
 
+    // --- Secondary Knobs on Chassis (In Gain & Blend) ---
+    // Input Gain Trim
+    inGainSlider.setRange(-24.0, 12.0, 0.1);
+    inGainSlider.setTextValueSuffix(" dB");
+    addAndMakeVisible(inGainSlider);
+    inGainLabel.setText("IN GAIN", juce::dontSendNotification);
+    inGainLabel.setJustificationType(juce::Justification::centred);
+    inGainLabel.setFont(juce::FontOptions(12.0f, juce::Font::bold));
+    inGainLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    addAndMakeVisible(inGainLabel);
+
+    // Blend
+    blendSlider.setRange(0.0, 1.0, 0.01);
+    blendSlider.setTextValueSuffix(" WET");
+    addAndMakeVisible(blendSlider);
+    blendLabel.setText("BLEND", juce::dontSendNotification);
+    blendLabel.setJustificationType(juce::Justification::centred);
+    blendLabel.setFont(juce::FontOptions(12.0f, juce::Font::bold));
+    blendLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    addAndMakeVisible(blendLabel);
+
     // 2-Way Diode Mode Toggle Switch
     diodeModeSwitch.onChange = [this](int newIdx) {
         if (auto* param = audioProcessor.getAPVTS().getParameter("mode"))
@@ -171,7 +162,6 @@ TheGoatAudioProcessorEditor::TheGoatAudioProcessorEditor(TheGoatAudioProcessor& 
     auto& apvts = audioProcessor.getAPVTS();
     inGainAttachment       = std::make_unique<SliderAttachment>(apvts, "inGain", inGainSlider);
     blendAttachment        = std::make_unique<SliderAttachment>(apvts, "blend", blendSlider);
-    masterVolAttachment    = std::make_unique<SliderAttachment>(apvts, "vol", masterVolSlider);
     distAttachment         = std::make_unique<SliderAttachment>(apvts, "dist", distSlider);
     lowAttachment          = std::make_unique<SliderAttachment>(apvts, "low", lowSlider);
     highAttachment         = std::make_unique<SliderAttachment>(apvts, "high", highSlider);
@@ -260,71 +250,83 @@ void TheGoatAudioProcessorEditor::resized()
     const int w = getWidth();
     const int h = getHeight();
 
-    // Top Bar (y = 0..52)
-    const int topMargin = 10;
-    const int btnH = 26;
+    // ==========================================
+    // 1. TOP BAR RIBBON (y = 0..52)
+    // ==========================================
+    const int topMargin = 12;
+    const int btnH = 28;
 
-    prevPresetButton.setBounds(10, topMargin, 24, btnH);
-    categoryBox.setBounds(36, topMargin, 120, btnH);
-    presetBox.setBounds(158, topMargin, 140, btnH);
-    nextPresetButton.setBounds(300, topMargin, 24, btnH);
-    savePresetButton.setBounds(326, topMargin, 42, btnH);
-    deletePresetButton.setBounds(370, topMargin, 38, btnH);
+    // --- Left Preset Navigation Section ---
+    int leftX = 12;
+    prevPresetButton.setBounds(leftX, topMargin, 26, btnH);
+    leftX += 28;
 
-    // Header Sliders & Controls (Right side of top bar)
-    const int headerKnobSize = 34;
-    int curX = w - 460;
+    categoryBox.setBounds(leftX, topMargin, 115, btnH);
+    leftX += 119;
 
-    inputRoutingBox.setBounds(curX, topMargin, 105, btnH);
-    inputRoutingLabel.setBounds(curX, topMargin + 26, 105, 14);
-    curX += 112;
+    presetBox.setBounds(leftX, topMargin, 135, btnH);
+    leftX += 139;
 
-    inGainSlider.setBounds(curX, topMargin - 4, headerKnobSize, headerKnobSize);
-    inGainLabel.setBounds(curX - 10, topMargin + 26, headerKnobSize + 20, 14);
-    curX += 52;
+    nextPresetButton.setBounds(leftX, topMargin, 26, btnH);
+    leftX += 28;
 
-    blendSlider.setBounds(curX, topMargin - 4, headerKnobSize, headerKnobSize);
-    blendLabel.setBounds(curX - 10, topMargin + 26, headerKnobSize + 20, 14);
-    curX += 52;
+    savePresetButton.setBounds(leftX, topMargin, 46, btnH);
+    leftX += 48;
 
-    masterVolSlider.setBounds(curX, topMargin - 4, headerKnobSize, headerKnobSize);
-    masterVolLabel.setBounds(curX - 10, topMargin + 26, headerKnobSize + 20, 14);
-    curX += 56;
+    deletePresetButton.setBounds(leftX, topMargin, 42, btnH);
 
-    oversampleBox.setBounds(curX, topMargin, 85, btnH);
-    oversampleLabel.setBounds(curX, topMargin + 26, 85, 14);
-    curX += 92;
+    // --- Right Utility Controls Section (aligned from right margin) ---
+    // [INPUT CH (148px)] [OVERSAMPLE (95px)] [MIDI MAP (72px)] [POWER ON (78px)]
+    const int rightMargin = 12;
+    const int powerW = 78;
+    const int midiW = 72;
+    const int oversampleW = 95;
+    const int inputW = 148;
+    const int gap = 8;
 
-    midiMenuButton.setBounds(curX, topMargin, 66, btnH);
-    curX += 70;
+    const int powerX = w - rightMargin - powerW;
+    const int midiX = powerX - gap - midiW;
+    const int oversampleX = midiX - gap - oversampleW;
+    const int inputX = oversampleX - gap - inputW;
 
-    powerButton.setBounds(w - 78, topMargin, 68, btnH);
+    powerButton.setBounds(powerX, topMargin, powerW, btnH);
+    midiMenuButton.setBounds(midiX, topMargin, midiW, btnH);
 
-    // Sub-Banner
+    oversampleBox.setBounds(oversampleX, topMargin, oversampleW, btnH);
+    oversampleLabel.setBounds(oversampleX, 0, oversampleW, 12);
+
+    inputRoutingBox.setBounds(inputX, topMargin, inputW, btnH);
+    inputRoutingLabel.setBounds(inputX, 0, inputW, 12);
+
+    // ==========================================
+    // 2. SUB-BANNER (y = 53..77)
+    // ==========================================
     bannerLabel.setBounds(0, 53, w, 24);
 
-    // Main Stompbox Faceplate Layout
-    const float wellMarginX = static_cast<float>(w) * 0.05f;
-    const float wellY = 88.0f;
+    // ==========================================
+    // 3. MAIN STOMPBOX CHASSIS WELL
+    // ==========================================
+    const float wellMarginX = static_cast<float>(w) * 0.04f;
+    const float wellY = 86.0f;
     const float wellW = static_cast<float>(w) - (wellMarginX * 2.0f);
     const float wellH = static_cast<float>(h) - wellY - 14.0f;
 
-    // 4 Massive Knobs across the middle row
-    const int knobDiameter = static_cast<int>(std::min(wellW * 0.18f, wellH * 0.38f));
-    const int knobY = static_cast<int>(wellY + wellH * 0.16f);
-    const int spacing = static_cast<int>(wellW / 4.0f);
+    // --- Row 1: 4 Massive Chainsaw Knobs ---
+    const int knobDiameter = static_cast<int>(std::min(wellW * 0.17f, wellH * 0.36f));
+    const int knobY = static_cast<int>(wellY + wellH * 0.14f);
+    const float spacing = wellW / 4.0f;
 
     // 1. HORNS (Gain)
     int kx = static_cast<int>(wellMarginX + (spacing * 0.5f) - (knobDiameter * 0.5f));
     distSlider.setBounds(kx, knobY, knobDiameter, knobDiameter);
     distLabel.setBounds(kx - 10, knobY + knobDiameter + 2, knobDiameter + 20, 20);
 
-    // 2. LOW (100 Hz)
+    // 2. LOW (100 Hz Gyrator)
     kx = static_cast<int>(wellMarginX + (spacing * 1.5f) - (knobDiameter * 0.5f));
     lowSlider.setBounds(kx, knobY, knobDiameter, knobDiameter);
     lowLabel.setBounds(kx - 10, knobY + knobDiameter + 2, knobDiameter + 20, 20);
 
-    // 3. HIGH (1.3 kHz)
+    // 3. HIGH (1.3 kHz Gyrator)
     kx = static_cast<int>(wellMarginX + (spacing * 2.5f) - (knobDiameter * 0.5f));
     highSlider.setBounds(kx, knobY, knobDiameter, knobDiameter);
     highLabel.setBounds(kx - 10, knobY + knobDiameter + 2, knobDiameter + 20, 20);
@@ -334,20 +336,34 @@ void TheGoatAudioProcessorEditor::resized()
     volSlider.setBounds(kx, knobY, knobDiameter, knobDiameter);
     volLabel.setBounds(kx - 10, knobY + knobDiameter + 2, knobDiameter + 20, 20);
 
-    // Lower Section: Diode Mode Toggle on left & Center Stomp Footswitch
-    const int toggleW = 220;
-    const int toggleH = 32;
-    const int toggleX = static_cast<int>(wellMarginX + 40.0f);
-    const int toggleY = static_cast<int>(wellY + wellH * 0.72f);
-    diodeModeSwitch.setBounds(toggleX, toggleY, toggleW, toggleH);
-    diodeModeLabel.setBounds(toggleX, toggleY - 18, toggleW, 16);
+    // --- Row 2: Lower Section (3 Balanced Modules) ---
 
-    // Center Stomp Footswitch
-    const int footW = 160;
+    // Module A: Left - Clipping Diode Toggle Switch
+    const int toggleW = static_cast<int>(std::min(220.0f, wellW * 0.28f));
+    const int toggleH = 32;
+    const int toggleX = static_cast<int>(wellMarginX + wellW * 0.04f);
+    const int toggleY = static_cast<int>(wellY + wellH * 0.68f);
+    diodeModeSwitch.setBounds(toggleX, toggleY, toggleW, toggleH);
+    diodeModeLabel.setBounds(toggleX, toggleY - 20, toggleW, 16);
+
+    // Module B: Center - Heavy-Duty Stomp Footswitch
+    const int footW = static_cast<int>(std::min(180.0f, wellW * 0.22f));
     const int footH = static_cast<int>(wellH * 0.38f);
     const int footX = static_cast<int>(w * 0.5f - footW * 0.5f);
-    const int footY = static_cast<int>(wellY + wellH * 0.58f);
+    const int footY = static_cast<int>(wellY + wellH * 0.56f);
     stompFootswitch.setBounds(footX, footY, footW, footH);
+
+    // Module C: Right - Input Gain & Blend Mix Knobs
+    const int subKnobDiameter = static_cast<int>(std::min(wellW * 0.11f, wellH * 0.27f));
+    const int subKnobY = static_cast<int>(wellY + wellH * 0.58f);
+    const int subSpacing = subKnobDiameter + 20;
+    const int rightModX = static_cast<int>(wellMarginX + wellW - (subSpacing * 2.0f));
+
+    inGainSlider.setBounds(rightModX, subKnobY, subKnobDiameter, subKnobDiameter);
+    inGainLabel.setBounds(rightModX - 10, subKnobY + subKnobDiameter + 2, subKnobDiameter + 20, 18);
+
+    blendSlider.setBounds(rightModX + subSpacing, subKnobY, subKnobDiameter, subKnobDiameter);
+    blendLabel.setBounds(rightModX + subSpacing - 10, subKnobY + subKnobDiameter + 2, subKnobDiameter + 20, 18);
 
     // MIDI Modal
     if (midiModal != nullptr)
