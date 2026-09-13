@@ -9,3 +9,7 @@ obj/
 .vscode/
 *.tmp
 *.log
+
+# Root-level loose binaries (organized in /VST3, /Standalone, /DLL)
+/THE GOAT.exe
+/THE GOAT.vst3
