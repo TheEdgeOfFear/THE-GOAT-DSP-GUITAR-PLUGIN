@@ -1,0 +1,11 @@
+# Build and temporary files
+build/
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+.vs/
+.vscode/
+*.tmp
+*.log
