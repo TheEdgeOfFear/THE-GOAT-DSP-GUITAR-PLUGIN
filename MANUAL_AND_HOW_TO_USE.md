@@ -1,8 +1,6 @@
 # User Manual & Instruction Guide — THE GOAT ⚡🐐
 ### *By THE EDGE OF FEAR*
 
-![THE GOAT Main Interface](Assets/THE%20GOAT.png)
-
 Welcome to the official user manual for **THE GOAT**, the ultimate Swedish Death Metal & Modern Deathcore HM-2 chainsaw distortion plugin. This manual explains every knob, switch, feature, and preset in detail, along with pro tips for dialing in devastating guitar and bass tones.
 
 ---

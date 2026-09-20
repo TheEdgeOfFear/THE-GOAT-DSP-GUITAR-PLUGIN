@@ -1,8 +1,6 @@
 # THE GOAT — Technical Description & DSP Architecture ⚡🐐
 ### *By THE EDGE OF FEAR*
 
-![THE GOAT Main Interface](Assets/THE%20GOAT.png)
-
 ---
 
 ## 1. Executive Summary & Circuit Pedigree

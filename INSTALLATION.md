@@ -1,8 +1,6 @@
 # Installation Guide — THE GOAT ⚡🐐
 ### *By THE EDGE OF FEAR*
 
-![THE GOAT Main Interface](Assets/THE%20GOAT.png)
-
 This guide provides step-by-step instructions for installing and setting up **THE GOAT** on Windows systems across all 3 formats: **VST3 Plugin**, **Standalone Desktop App**, and **DLL**.
 
 ---

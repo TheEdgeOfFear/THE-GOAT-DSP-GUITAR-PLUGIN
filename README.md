@@ -7,7 +7,7 @@ The ultimate Swedish Chainsaw and Modern Deathcore HM-2 cult distortion plugin. 
 ---
 
 ## Plugin Overview
-![THE GOAT Main Interface](Assets/THE%20GOAT.png)
+
 THE GOAT by THE EDGE OF FEAR is a boutique digital emulation of the legendary Japanese 1980s Boss HM-2 Heavy Metal circuit and the Melbourne-crafted Australian boutique evolution, the Kink Pedals "Oath of the Goat".
 
 THE GOAT accurately models the entire multi-stage analog signal path: from the 72.3 Hz Butterworth pre-emphasis filter and discrete transistor buffer treble shelf, through the 4x oversampled asymmetric diode clipping engine, into the passive 530 Hz mid-scoop, and across the iconic active Dual-Gyrator Tone Stack (100 Hz Low and 1.3 kHz Buzzsaw Core).
@@ -16,21 +16,19 @@ THE GOAT accurately models the entire multi-stage analog signal path: from the 7
 
 ## Documentation and User Guides
 
-* Pedal Description and DSP Architecture: Comprehensive circuit analysis, block diagrams, mathematical diode transfer functions, and filter equations.
-* Installation Guide: Step-by-step setup for VST3 (including 1-click batch installer), Standalone Desktop EXE, and DLL across Reaper, Cubase, Ableton, FL Studio, Studio One, and more.
-* User Manual and Instruction Guide: Complete control reference, preset bank guide, MIDI Learn mapping instructions, and pro dialed-in Deathcore/Metal settings.
+* [Pedal Description and DSP Architecture](DESCRIPTION.md): Comprehensive circuit analysis, block diagrams, mathematical diode transfer functions, and filter equations.
+* [Installation Guide](INSTALLATION.md): Step-by-step setup for VST3 (including 1-click batch installer), Standalone Desktop EXE, and DLL across Reaper, Cubase, Ableton, FL Studio, Studio One, and more.
+* [User Manual and Instruction Guide](MANUAL_AND_HOW_TO_USE.md): Complete control reference, preset bank guide, MIDI Learn mapping instructions, and pro dialed-in Deathcore/Metal settings.
 
 ---
 
 ## Formats and Directory Structure
 
-The repository provides ready-to-use binaries and complete source code in dedicated folders:
+The repository provides ready-to-use release binaries in dedicated folders:
 
-* /VST3 (VST3 Plugin): Standard 64-bit .vst3 bundle for DAWs + 1-click Windows elevated installer script (INSTALL_THE_GOAT_VST3.bat).
-* /Standalone (Standalone App): Native 64-bit Windows executable (THE GOAT.exe) for live guitar playing without a DAW (ASIO low-latency support).
-* /DLL (Standalone DLL): Direct PE 64-bit dynamic library (THE GOAT.dll) for modular hosts and plugin wrappers.
-* /Source (C++ / JUCE Source): Complete source code, DSP chains, look-and-feel classes, and CMake project definitions.
-* /Assets (Graphics and UI): Full-resolution interface artwork (THE GOAT.png, THE GOAT BG.jpg).
+* **/VST3** (VST3 Plugin): Standard 64-bit `.vst3` bundle for DAWs + 1-click Windows elevated installer script (`INSTALL_THE_GOAT_VST3.bat`).
+* **/Standalone** (Standalone App): Native 64-bit Windows executable (`THE GOAT.exe`) for live guitar playing without a DAW (ASIO low-latency support).
+* **/DLL** (Standalone DLL): Direct PE 64-bit dynamic library (`THE GOAT.dll`) for modular hosts and plugin wrappers.
 
 ---
 
@@ -78,37 +76,11 @@ The repository provides ready-to-use binaries and complete source code in dedica
 
 ---
 
-## Building from Source
+Stay RAD Metal Heads... The Edge Of Fear
 
-To compile THE GOAT yourself:
-
-### Prerequisites:
-
-* CMake 3.22 or later
-* Visual Studio 2022 (with "Desktop development with C++" workload)
-* Windows 10 / 11 (64-bit)
-
-### Build Steps:
-
-git clone [https://github.com/TheEdgeOfFear/THE-GOAT-DSP-GUITAR-PLUGIN.git](https://github.com/TheEdgeOfFear/THE-GOAT-DSP-GUITAR-PLUGIN.git)
-cd THE-GOAT-DSP-GUITAR-PLUGIN
-
-cmake -B build -S .
-
-cmake --build build --config Release --target TheGoat_VST3 TheGoat_Standalone
-
-The compiled binaries will be output to:
-
-* build/THE GOAT/TheGoat_artefacts/Release/VST3/THE GOAT.vst3
-* build/THE GOAT/TheGoat_artefacts/Release/Standalone/THE GOAT.exe
-
----
-
-All the raw files are supplied for your adjustments and builds - stay RAD Metal Heads... The Edge Of Fear
-
-YouTube Channel: [https://www.youtube.com/@theedgeoffearmetal](https://www.youtube.com/@theedgeoffearmetal)
-Instagram: [https://www.instagram.com/theedgeoffear/](https://www.instagram.com/theedgeoffear/)
-Soundcloud: [https://soundcloud.com/user-290758847](https://soundcloud.com/user-290758847)
+* **YouTube Channel**: [https://www.youtube.com/@theedgeoffearmetal](https://www.youtube.com/@theedgeoffearmetal)
+* **Instagram**: [https://www.instagram.com/theedgeoffear/](https://www.instagram.com/theedgeoffear/)
+* **Soundcloud**: [https://soundcloud.com/user-290758847](https://soundcloud.com/user-290758847)
 
 ## License
 
