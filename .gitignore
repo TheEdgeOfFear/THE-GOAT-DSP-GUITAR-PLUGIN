@@ -14,3 +14,10 @@ obj/
 /THE GOAT.exe
 /THE GOAT.dll
 /THE GOAT.vst3
+
+# Raw uncompiled files (for binary release repository)
+Source/
+asiosdk/
+CMakeLists.txt
+Assets/
+Background Image/
